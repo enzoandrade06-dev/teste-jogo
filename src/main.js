@@ -4,7 +4,6 @@ import { TRACKS, Track } from './track.js';
 import { CHARACTERS } from './characters.js';
 import { Racer, resolveKartCollisions } from './kart.js';
 import { KartAI } from './ai.js';
-import { ItemSystem, ITEMS } from './items.js';
 import { PowerSystem, POWERS, POWER_TIME } from './powers.js';
 import { Audio } from './audio.js';
 
@@ -118,7 +117,6 @@ function startRace() {
   if (race) {
     scene.remove(race.track.mesh, race.sparks.points);
     for (const r of race.racers) scene.remove(r.mesh);
-    scene.remove(race.items.group);
     scene.remove(race.powers.group);
   }
 
@@ -146,13 +144,12 @@ function startRace() {
     if (!r.isPlayer) r.ai = new KartAI(r, aiSeed++);
   }
 
-  const items = new ItemSystem(track, scene);
   const powers = new PowerSystem(track, scene);
   const sparks = new Sparks();
   scene.add(sparks.points);
 
   race = {
-    track, racers, player, items, powers, sparks,
+    track, racers, player, powers, sparks,
     time: 0,
     finishDelay: 0,
     results: null,
@@ -237,8 +234,6 @@ const ui = {
   speedVal: document.getElementById('speed-val'),
   speedFg: document.getElementById('speed-fg'),
   speedo: document.getElementById('speedo'),
-  itemSlot: document.getElementById('item-slot'),
-  itemIcon: document.getElementById('item-icon'),
   powerSlot: document.getElementById('power-slot'),
   powerIcon: document.getElementById('power-icon'),
   powerName: document.getElementById('power-name'),
@@ -440,18 +435,6 @@ function updateHUD(dt) {
   ui.speedFg.style.strokeDashoffset = String(158 * (1 - frac));
   ui.speedo.classList.toggle('boost', p.boosting);
 
-  // item
-  if (p.itemRolling > 0) {
-    ui.itemSlot.classList.add('rolling');
-    ui.itemSlot.classList.remove('filled');
-    const keys = Object.keys(ITEMS);
-    ui.itemIcon.textContent = ITEMS[keys[Math.floor(performance.now() / 70) % keys.length]].icon;
-  } else {
-    ui.itemSlot.classList.remove('rolling');
-    ui.itemSlot.classList.toggle('filled', !!p.item);
-    ui.itemIcon.textContent = p.item ? ITEMS[p.item].icon : '';
-  }
-
   // superpoder ativo
   const hasPower = p.powerTime > 0 && p.power;
   ui.powerSlot.classList.toggle('on', !!hasPower);
@@ -546,7 +529,7 @@ function frame(now) {
 }
 
 function step(dt) {
-  const { track, racers, player, items, powers, sparks } = race;
+  const { track, racers, player, powers, sparks } = race;
 
   // ---- contagem regressiva ----
   let racing = state.phase === 'racing' || state.phase === 'finishing';
@@ -577,13 +560,6 @@ function step(dt) {
 
   if (input.justAction('camera')) state.camMode = (state.camMode + 1) % CAM_MODES.length;
   if (input.justAction('respawn') && racing) { player.respawn(); showMsg('REPOSICIONADO', 0.8, '#ffcc33'); }
-  if (input.justAction('item') && player.item && racing) {
-    const used = items.use(player, racers);
-    if (used === 'turbo') audio.boost();
-    else if (used === 'raio') { audio.hit(); showMsg('RAIO!', 1, '#ffe066'); }
-    else audio.itemGet();
-    input.rumble(0.4, 0.6, 160);
-  }
 
   // ---- IA ----
   // rubber band: bots à frente do jogador afrouxam um pouco, os de trás apertam
@@ -592,7 +568,6 @@ function step(dt) {
     const gap = (r.raceProgress - player.raceProgress) / track.length;
     const difficulty = THREE.MathUtils.clamp(0.99 - gap * 0.35, 0.86, 1.06);
     r.ai.update(dt, difficulty, racers);
-    if (r.input.useItem && r.item) items.use(r, racers);
   }
 
   // ---- física ----
@@ -622,16 +597,6 @@ function step(dt) {
       audio.hit();
       input.rumble(1, 0.9, 460);
       showMsg(POWER_MSG[ev.type] ?? 'ATINGIDO!', 1, '#ff6b6b');
-    } else if (ev.owner === player && ev.landed) {
-      audio.itemGet();
-    }
-  });
-
-  items.update(dt, racers, (ev) => {
-    if (ev.target === player && ev.landed) {
-      audio.hit();
-      input.rumble(1, 0.8, 420);
-      showMsg(ev.type === 'oil' ? 'ÓLEO!' : 'ATINGIDO!', 1, '#ff6b6b');
     } else if (ev.owner === player && ev.landed) {
       audio.itemGet();
     }

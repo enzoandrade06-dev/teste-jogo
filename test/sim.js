@@ -124,14 +124,14 @@ console.log('\n=== SUPERPODERES ===');
   // --- geometria dos cubos ---
   {
     const powers = new PowerSystem(track, new THREE.Scene());
-    check('20 cubos (4 fileiras x 5)', powers.cubes.length === 20);
+    check('10 cubos (2 fileiras x 5)', powers.cubes.length === 10);
 
     const byRow = new Map();
     for (const c of powers.cubes) {
       if (!byRow.has(c.index)) byRow.set(c.index, []);
       byRow.get(c.index).push(track.project(c.position).lateral);
     }
-    check('4 fileiras distintas na volta', byRow.size === 4);
+    check('2 fileiras distintas na volta', byRow.size === 2);
     const lats = [...byRow.values()][0].sort((a, b) => a - b);
     check('fileira com 5 cubos atravessando a pista',
       lats.length === 5 && lats.every((l) => Math.abs(l) <= track.halfWidth),
@@ -140,6 +140,11 @@ console.log('\n=== SUPERPODERES ===');
     check('cubos igualmente espaçados na horizontal',
       Math.max(...gaps) - Math.min(...gaps) < 0.01,
       `passo ${gaps[0].toFixed(2)} m`);
+
+    const indices = [...byRow.keys()].sort((a, b) => a - b);
+    const along = Math.min(indices[1] - indices[0], track.n - (indices[1] - indices[0])) * track.segLen;
+    check('fileiras bem distantes uma da outra (>= 25% da volta)',
+      along >= track.length * 0.25, `${along.toFixed(0)} m de ${track.length.toFixed(0)} m`);
   }
 
   // --- supervelocidade ---
@@ -161,7 +166,7 @@ console.log('\n=== SUPERPODERES ===');
     check('teletransporte avança ~42 m', jump > 35 && jump < 50, `${jump.toFixed(1)} m`);
     check('teletransporte não joga o kart para fora',
       Math.abs(track.project(a.position).lateral) <= track.halfWidth);
-    check('teletransporte dá invulnerabilidade pelos 3 s', a.invulnTime >= POWER_TIME);
+    check('teletransporte dá invulnerabilidade pela duração do poder', a.invulnTime >= POWER_TIME);
   }
 
   // --- canhão: estabiliza o adversário ---
@@ -209,7 +214,7 @@ console.log('\n=== SUPERPODERES ===');
       a.input.throttle = 1;
       a.update(dt, true);
     }
-    check('armadilhas são soltas em série', powers.traps.length >= 8,
+    check('armadilhas são soltas em série', powers.traps.length >= 6,
       `${powers.traps.length} armadilhas`);
     const off = powers.traps.map((h) => Math.abs(track.project(h.mesh.position).lateral));
     check('armadilhas ficam sobre a pista (linha paralela)',

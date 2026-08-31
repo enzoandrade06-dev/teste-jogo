@@ -56,25 +56,9 @@ canvas#game { display: block; width: 100%; height: 100%; }
 
 #hud-topright { position: absolute; top: 18px; right: 18px; text-align: right; }
 
-/* item slot */
-#item-slot {
-  position: absolute; top: 18px; left: 50%;
-  transform: translateX(-50%);
-  width: 92px; height: 92px;
-  border-radius: 18px;
-  background: var(--panel);
-  border: 2px solid var(--stroke);
-  backdrop-filter: blur(8px);
-  display: grid; place-items: center;
-}
-#item-icon { font-size: 46px; line-height: 1; transition: transform .12s; }
-#item-slot.rolling #item-icon { animation: shake .28s infinite; }
-#item-slot.filled { border-color: var(--accent); box-shadow: 0 0 22px rgba(255, 204, 51, .35); }
-@keyframes shake { 50% { transform: scale(1.16) rotate(6deg); } }
-
 /* superpoder ativo (cubos roxos) */
 #power-slot {
-  position: absolute; top: 122px; left: 50%;
+  position: absolute; top: 18px; left: 50%;
   transform: translateX(-50%) scale(.86);
   min-width: 210px;
   display: flex; align-items: center; gap: 10px;

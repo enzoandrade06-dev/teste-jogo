@@ -2,14 +2,14 @@ import * as THREE from 'three';
 
 // ---------------------------------------------------------------------------
 // Superpoderes: fileiras de 5 cubos atravessam a pista. Quem passa por um cubo
-// recebe um poder sorteado que fica ativo por 3 segundos e age sozinho durante
+// recebe um poder sorteado que fica ativo por alguns segundos (POWER_TIME) e age sozinho durante
 // esse tempo (vale para o jogador e para os bots).
 // ---------------------------------------------------------------------------
 
 const TMP = new THREE.Vector3();
 const TMP2 = new THREE.Vector3();
 
-export const POWER_TIME = 3;          // duração de qualquer poder, em segundos
+export const POWER_TIME = 2.2;        // duração de qualquer poder, em segundos
 
 export const POWERS = {
   canhao:     { icon: '💥', name: 'Canhão',          color: 0xff5c8a },
@@ -21,7 +21,7 @@ export const POWERS = {
 const KEYS = Object.keys(POWERS);
 
 // --- ajustes de balanceamento ---
-const CUBE_ROWS = 4;            // fileiras espalhadas pela volta
+const CUBE_ROWS = 2;            // fileiras espalhadas pela volta (bem distantes entre si)
 const CUBES_PER_ROW = 5;        // cubos por fileira (atravessando a pista)
 const CUBE_COOLDOWN = 5;        // segundos até o cubo voltar
 const CUBE_RADIUS = 2.9;        // raio de coleta
@@ -34,7 +34,7 @@ const FREEZE_TIME = 1.35;       // quanto o alvo fica estabilizado
 const TRAP_INTERVAL = 0.3;      // uma armadilha a cada X s
 const TRAP_LIFE = 9;
 
-const PUNCH_INTERVAL = 1.2;     // um soco a cada X s (3 socos em 3 s)
+const PUNCH_INTERVAL = 1.2;     // um soco a cada X s enquanto o poder durar
 const PUNCH_SPEED = 46;
 const PUNCH_RANGE = 45;         // alcance médio-alto, em metros
 const PUNCH_IMPULSE = 26;
@@ -90,7 +90,7 @@ export class PowerSystem {
   _makeCubes() {
     const t = this.track;
     for (let r = 0; r < CUBE_ROWS; r++) {
-      // 0.2, 0.4, 0.6, 0.8 da volta — longe das caixas de item (0.1, 0.3, ...)
+      // distribui as fileiras uniformemente pela volta, bem separadas entre si
       const index = Math.round((r + 1) / (CUBE_ROWS + 1) * t.n);
       for (let c = 0; c < CUBES_PER_ROW; c++) {
         const k = c / (CUBES_PER_ROW - 1) * 2 - 1;   // -1 .. +1
@@ -151,7 +151,7 @@ export class PowerSystem {
     // mantém o embalo, mas realinhado ao novo trecho da pista
     const spd = Math.max(r.forwardSpeed, 14);
     r.velocity.set(Math.sin(r.yaw) * spd, 0, Math.cos(r.yaw) * spd);
-    // some por 3 s: não pode ser atingido logo depois de reaparecer
+    // some pela duração do poder: não pode ser atingido logo depois de reaparecer
     r.invulnTime = Math.max(r.invulnTime, POWER_TIME);
   }
 
@@ -224,7 +224,7 @@ export class PowerSystem {
         // renova o turbo enquanto o poder durar
         r.addBoost(Math.max(0.08, r.powerTime), POWERS.velocidade.color);
         break;
-      // teleporte é instantâneo: só resta a invulnerabilidade dos 3 s
+      // teleporte é instantâneo: só resta a invulnerabilidade enquanto o poder durar
     }
   }
 
