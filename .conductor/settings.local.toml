@@ -1,0 +1,42 @@
+"$schema" = "https://conductor.build/schemas/settings.repo.schema.json"
+
+# Jogo de kart em Vite + Three.js. Gerenciador: npm (package-lock.json).
+# Roda inteiro no navegador; não há banco, Docker nem serviço compartilhado.
+
+[scripts]
+# `npm ci` mantém o workspace fiel ao lockfile; o fallback evita travar a
+# criação do workspace numa branch onde package.json e o lock ainda divergem.
+setup = "npm ci || npm install"
+
+# Cada workspace recebe seu próprio CONDUCTOR_PORT e o Vite só escuta nele,
+# então vários workspaces podem rodar o jogo ao mesmo tempo.
+run_mode = "concurrent"
+
+# Limpeza apenas dentro do workspace (cache do Vite e bundle), antes de o
+# Conductor remover a worktree. Nada fora do workspace é tocado.
+archive = "rm -rf node_modules/.vite dist"
+
+[scripts.run.dev]
+command = "npm run dev -- --port $CONDUCTOR_PORT --strictPort"
+default = true
+icon = "play"
+# Depende de CONDUCTOR_PORT (só existe localmente) e o jogo precisa de um
+# navegador real com Gamepad API para o controle do PS5.
+available_in = [ "local" ]
+
+[scripts.run.preview]
+command = "npm run build && npm run preview -- --port $CONDUCTOR_PORT --strictPort"
+icon = "monitor-play"
+available_in = [ "local" ]
+
+[scripts.run.test]
+# Simulação headless da corrida (física, voltas, IA, geometria das pistas).
+# Não usa navegador nem porta, então roda também em workspace na nuvem.
+command = "npm test"
+icon = "test-tube"
+available_in = [ "local", "cloud" ]
+
+[scripts.run.build]
+command = "npm run build"
+icon = "hammer"
+available_in = [ "local", "cloud" ]
