@@ -1,17 +1,20 @@
 import * as THREE from 'three';
 
 // Elenco genérico — sem nenhuma propriedade intelectual de terceiros.
+// Todos os pilotos têm exatamente as mesmas características: a escolha do
+// personagem é só estética (cor). A corrida é decidida pela pista e pelos
+// superpoderes, não por vantagem de veículo.
 // speed  : velocidade máxima
 // accel  : aceleração
 // grip   : aderência em curva (quanto menos, mais desliza)
 // weight : massa (empurra os outros nas colisões, sofre menos knockback)
 export const CHARACTERS = [
   { id: 'vera',  name: 'VERA',   color: 0xff4d6d, accent: 0xffd166, speed: 1.00, accel: 1.00, grip: 1.00, weight: 1.00, desc: 'Equilibrada' },
-  { id: 'bolt',  name: 'BOLT',   color: 0x3ddc97, accent: 0x0b3d2e, speed: 1.09, accel: 0.88, grip: 0.94, weight: 0.95, desc: 'Velocista' },
-  { id: 'tuk',   name: 'TUK',    color: 0xffc233, accent: 0x6b3f00, speed: 0.90, accel: 1.16, grip: 1.06, weight: 0.82, desc: 'Ágil e leve' },
-  { id: 'brutus',name: 'BRUTUS', color: 0x8b6bff, accent: 0x241546, speed: 1.05, accel: 0.82, grip: 0.90, weight: 1.35, desc: 'Pesadão' },
-  { id: 'nina',  name: 'NINA',   color: 0x36c5f0, accent: 0x0a3b52, speed: 0.95, accel: 1.05, grip: 1.14, weight: 0.90, desc: 'Curvas coladas' },
-  { id: 'zed',   name: 'ZED',    color: 0xff8b3d, accent: 0x4a1f00, speed: 1.02, accel: 0.98, grip: 0.98, weight: 1.10, desc: 'Bruto e rápido' },
+  { id: 'bolt',  name: 'BOLT',   color: 0x3ddc97, accent: 0x0b3d2e, speed: 1.00, accel: 1.00, grip: 1.00, weight: 1.00, desc: 'Equilibrada' },
+  { id: 'tuk',   name: 'TUK',    color: 0xffc233, accent: 0x6b3f00, speed: 1.00, accel: 1.00, grip: 1.00, weight: 1.00, desc: 'Equilibrada' },
+  { id: 'brutus',name: 'BRUTUS', color: 0x8b6bff, accent: 0x241546, speed: 1.00, accel: 1.00, grip: 1.00, weight: 1.00, desc: 'Equilibrada' },
+  { id: 'nina',  name: 'NINA',   color: 0x36c5f0, accent: 0x0a3b52, speed: 1.00, accel: 1.00, grip: 1.00, weight: 1.00, desc: 'Equilibrada' },
+  { id: 'zed',   name: 'ZED',    color: 0xff8b3d, accent: 0x4a1f00, speed: 1.00, accel: 1.00, grip: 1.00, weight: 1.00, desc: 'Equilibrada' },
 ];
 
 /** Monta o kart + piloto em blocos simples (estilo low-poly colorido). */
