@@ -546,7 +546,7 @@ function frame(now) {
 }
 
 function step(dt) {
-  const { track, racers, player, items, sparks } = race;
+  const { track, racers, player, items, powers, sparks } = race;
 
   // ---- contagem regressiva ----
   let racing = state.phase === 'racing' || state.phase === 'finishing';
