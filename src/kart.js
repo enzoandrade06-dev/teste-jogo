@@ -72,16 +72,16 @@ export class Racer {
 
     // penalidades
     this.spinTime = 0;
-    this.squashTime = 0;
-    this.shieldTime = 0;
+    this.frozenTime = 0;      // "estabilizado" pelo canhão: trava no lugar
     this.invulnTime = 0;
 
-    // itens
-    this.item = null;
-    this.itemRolling = 0;
+    // superpoderes (ver powers.js): ativo por alguns segundos
+    this.power = null;
+    this.powerTime = 0;
+    this.powerCooldown = 0;
 
     // entradas (preenchidas pelo jogador ou pela IA)
-    this.input = { steer: 0, throttle: 0, brake: 0, drift: false, useItem: false };
+    this.input = { steer: 0, throttle: 0, brake: 0, drift: false };
 
     // visual
     this.mesh = buildKart(character);
@@ -113,10 +113,14 @@ export class Racer {
   /** Leva um golpe: rodopia e perde velocidade. */
   hit(kind = 'spin') {
     if (this.invulnTime > 0) return false;
-    if (this.shieldTime > 0) { this.shieldTime = 0; this.invulnTime = 0.6; return false; }
-    if (kind === 'squash') {
-      this.squashTime = 1.6;
-      this.velocity.multiplyScalar(0.15);
+    if (kind === 'freeze') {
+      // canhão: o kart é estabilizado e para de responder por um instante
+      this.frozenTime = 1.35;
+      this.velocity.multiplyScalar(0.05);
+    } else if (kind === 'punch') {
+      // soco: rodopia mais forte e perde quase toda a velocidade
+      this.spinTime = 1.35;
+      this.velocity.multiplyScalar(0.2);
     } else {
       this.spinTime = 1.15;
       this.velocity.multiplyScalar(0.35);
@@ -135,7 +139,7 @@ export class Racer {
     this.velocity.set(0, 0, 0);
     this.vy = 0;
     this.spinTime = 0;
-    this.squashTime = 0;
+    this.frozenTime = 0;
     this.drifting = false;
     this.driftCharge = 0;
     this.invulnTime = 1.2;
@@ -147,11 +151,10 @@ export class Racer {
     const t = this.track;
     const inp = this.input;
 
-    const stunned = this.spinTime > 0 || this.squashTime > 0;
+    const stunned = this.spinTime > 0 || this.frozenTime > 0;
     this.spinTime = Math.max(0, this.spinTime - dt);
-    this.squashTime = Math.max(0, this.squashTime - dt);
+    this.frozenTime = Math.max(0, this.frozenTime - dt);
     this.invulnTime = Math.max(0, this.invulnTime - dt);
-    this.shieldTime = Math.max(0, this.shieldTime - dt);
     this.boostTime = Math.max(0, this.boostTime - dt);
 
     FORWARD.set(Math.sin(this.yaw), 0, Math.cos(this.yaw));
@@ -159,6 +162,13 @@ export class Racer {
 
     let vF = this.velocity.dot(FORWARD);
     let vR = this.velocity.dot(RIGHT);
+
+    // estabilizado: freio total, sem direção e sem turbo
+    if (this.frozenTime > 0) {
+      const damp = Math.exp(-7 * dt);
+      vF *= damp;
+      vR *= damp;
+    }
 
     // --- onde estamos na pista ---
     const proj = t.project(this.position, this.trackIndex);
@@ -346,10 +356,6 @@ export class Racer {
     const targetRoll = -(this.drifting ? this.driftDir * 0.22 : steerIn * 0.09) * Math.min(1, Math.abs(vF) / 14);
     this.visualRoll += (targetRoll - this.visualRoll) * Math.min(1, dt * 8);
     ud.body.rotation.z = this.visualRoll;
-
-    // agachamento no salto / esmagado
-    const squash = this.squashTime > 0 ? 0.35 : 1;
-    ud.body.scale.set(1 / Math.sqrt(squash), squash, 1 / Math.sqrt(squash));
 
     // rodas
     this.wheelSpin += vF * dt * 2.1;

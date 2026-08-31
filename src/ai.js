@@ -18,7 +18,6 @@ export class KartAI {
     this.p = PERSONALITIES[seed % PERSONALITIES.length];
     this.seed = seed;
     this.wobblePhase = seed * 1.7;
-    this.itemCooldown = 1 + seed * 0.4;
     this.stuckTimer = 0;
   }
 
@@ -90,14 +89,6 @@ export class KartAI {
         if (this.stuckTimer > 3.2) { r.respawn(); this.stuckTimer = 0; }
       }
     } else this.stuckTimer = 0;
-
-    // ---- itens ----
-    this.itemCooldown -= dt;
-    inp.useItem = false;
-    if (r.item && this.itemCooldown <= 0) {
-      inp.useItem = true;
-      this.itemCooldown = 1.4 + (this.seed % 3) * 0.5;
-    }
   }
 
   _avoid(racers, t) {

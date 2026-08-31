@@ -101,6 +101,32 @@ export class Audio {
     [523, 659, 784, 1047].forEach((f, i) =>
       this._blip({ freq: f, dur: 0.3, type: 'square', vol: 0.25, delay: i * 0.13 }));
   }
+  /** Som de coleta de cubo, por tipo de superpoder. */
+  power(kind) {
+    switch (kind) {
+      case 'canhao':
+        this._blip({ freq: 180, to: 90, dur: 0.22, type: 'square', vol: 0.24 });
+        this._noise({ dur: 0.2, vol: 0.22, freq: 700 });
+        break;
+      case 'velocidade':
+        this._blip({ freq: 320, to: 1800, dur: 0.4, type: 'sawtooth', vol: 0.22 });
+        break;
+      case 'armadilhas':
+        this._blip({ freq: 520, dur: 0.1, type: 'square', vol: 0.18 });
+        this._blip({ freq: 380, dur: 0.12, type: 'square', vol: 0.18, delay: 0.1 });
+        break;
+      case 'soco':
+        this._blip({ freq: 140, to: 60, dur: 0.28, type: 'triangle', vol: 0.26 });
+        break;
+      case 'teleporte':
+        this._blip({ freq: 1400, to: 260, dur: 0.3, type: 'sine', vol: 0.22 });
+        this._blip({ freq: 300, to: 1600, dur: 0.3, type: 'sine', vol: 0.18, delay: 0.14 });
+        break;
+      default:
+        this._blip({ freq: 700, to: 1200, dur: 0.2, type: 'triangle', vol: 0.2 });
+    }
+  }
+
   skid(amount) {
     if (!this.ctx || amount < 0.2) return;
     if (this._lastSkid && this.ctx.currentTime - this._lastSkid < 0.09) return;
