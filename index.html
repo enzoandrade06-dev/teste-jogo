@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Turbo Kart GP</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <div id="hud" class="hidden">
+    <div id="hud-topleft">
+      <div class="panel">
+        <div class="label">VOLTA</div>
+        <div id="lap" class="big">1<span class="small">/3</span></div>
+      </div>
+      <div class="panel">
+        <div class="label">POSIÇÃO</div>
+        <div id="pos" class="big">1<span class="small">/6</span></div>
+      </div>
+    </div>
+
+    <div id="hud-topright">
+      <div class="panel">
+        <div class="label">TEMPO</div>
+        <div id="time" class="mono">0:00.00</div>
+        <div class="label" style="margin-top:6px">MELHOR VOLTA</div>
+        <div id="best" class="mono dim">--:--.--</div>
+      </div>
+    </div>
+
+    <div id="item-slot"><div id="item-icon"></div></div>
+
+    <div id="speedo">
+      <svg viewBox="0 0 120 70">
+        <path id="speed-bg" d="M10 62 A 50 50 0 0 1 110 62" />
+        <path id="speed-fg" d="M10 62 A 50 50 0 0 1 110 62" />
+      </svg>
+      <div id="speed-val">0</div>
+      <div id="speed-unit">km/h</div>
+    </div>
+
+    <div id="drift-meter"><div id="drift-fill"></div></div>
+    <div id="center-msg"></div>
+    <div id="pad-status" class="off">🎮 Controle desconectado</div>
+  </div>
+
+  <div id="menu">
+    <div class="menu-inner">
+      <h1>TURBO KART <span>GP</span></h1>
+      <p class="tag">Escolha seu piloto</p>
+      <div id="roster"></div>
+      <div id="track-pick">
+        <span class="label">PISTA</span>
+        <div id="tracks"></div>
+      </div>
+      <button id="start">CORRER</button>
+      <div id="menu-pad" class="dim">Procurando controle...</div>
+      <details class="controls">
+        <summary>Controles</summary>
+        <table>
+          <tr><td>Acelerar</td><td>R2 / <kbd>W</kbd> <kbd>↑</kbd></td></tr>
+          <tr><td>Frear / Ré</td><td>L2 / <kbd>S</kbd> <kbd>↓</kbd></td></tr>
+          <tr><td>Direção</td><td>Analógico esq. / <kbd>A</kbd> <kbd>D</kbd></td></tr>
+          <tr><td>Pular / Derrapar</td><td>L1 ou R1 / <kbd>Shift</kbd></td></tr>
+          <tr><td>Usar item</td><td>✕ (Cross) / <kbd>Espaço</kbd></td></tr>
+          <tr><td>Olhar para trás</td><td>△ (Triangle) / <kbd>C</kbd></td></tr>
+          <tr><td>Câmera</td><td>◯ (Circle) / <kbd>V</kbd></td></tr>
+          <tr><td>Reposicionar</td><td>□ (Square) / <kbd>R</kbd></td></tr>
+          <tr><td>Pausar</td><td>Options / <kbd>Esc</kbd></td></tr>
+        </table>
+      </details>
+    </div>
+  </div>
+
+  <div id="results" class="hidden">
+    <div class="menu-inner">
+      <h1 id="result-title">FIM DE CORRIDA</h1>
+      <table id="result-table"></table>
+      <button id="again">CORRER DE NOVO</button>
+    </div>
+  </div>
+
+  <div id="pause" class="hidden"><div class="menu-inner"><h1>PAUSA</h1><p class="tag">Options / Esc para continuar</p></div></div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
